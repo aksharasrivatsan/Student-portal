@@ -1,4 +1,6 @@
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
+import { mockUsers } from "../data/mockUsers";
+import { useNavigate } from "react-router-dom";
 
 
 import { useState } from "react";
@@ -8,21 +10,38 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [screen, setScreen] = useState("default");
+    const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+const handleLogin = (e) => {
+  e.preventDefault();
 
-    const correctEmail = "student@college.edu";
-    const correctPassword = "password123";
+  const normalizedEmail = email.trim().toLowerCase();
 
-    if (email !== correctEmail) {
-      setScreen("invalidUsername");
-    } else if (password !== correctPassword) {
-      setScreen("invalidPassword");
-    } else {
-      alert("Login successful");
-    }
-  };
+  const user = mockUsers.find(
+    (u) => u.email.toLowerCase() === normalizedEmail
+  );
+
+  if (!user) {
+    setScreen("invalidUsername"); // Login screen 2
+    return;
+  }
+
+  if (password !== user.password) {
+    setScreen("invalidPassword"); // Login screen 3
+    return;
+  }
+
+  // Successful login
+  navigate("/dashboard", {
+    state: {
+      name: user.name,
+      regNo: user.regNo,
+      major: user.major,
+      mockId: user.mockId,
+    },
+  });
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
